@@ -45,6 +45,11 @@ test('registration surfaces field validation errors', async () => {
   const { auth } = await setup([{ status: 400, body: { username: ['A user with that username already exists.'] } }])
   await assert.rejects(auth.register('ada', 'ada@example.com', 'password'), /username: A user/)
 })
+test('registration sends first and last name', async () => {
+  const { auth, calls } = await setup([{ status: 201, body: { username: 'ada' } }])
+  await auth.register('ada', 'ada@example.com', 'Ada', 'Lovelace', 'password')
+  assert.deepEqual(JSON.parse(calls[0].body), { username: 'ada', email: 'ada@example.com', first_name: 'Ada', last_name: 'Lovelace', password: 'password' })
+})
 test('network failures preserve an existing session for retry', async () => {
   const { auth, storage } = await setup([new TypeError('Failed to fetch')], { access: 'a', refresh: 'r' })
   await assert.rejects(auth.getProfile(), /Unable to reach the server/)

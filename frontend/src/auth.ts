@@ -1,4 +1,4 @@
-export type Profile = { username: string; email: string }
+export type Profile = { username: string; email: string; first_name: string; last_name: string }
 type Tokens = { access: string; refresh: string }
 const storageKey = 'system-design-session'
 const baseUrl = (import.meta.env.VITE_API_BASE_URL || '/api/auth').replace(/\/$/, '')
@@ -41,7 +41,8 @@ function save(next: Tokens | null) {
 }
 export const signOut = () => save(null)
 export const hasSession = () => tokens !== null
-export const register = (username: string, email: string, password: string) => request('register', { username, email, password })
+export const register = (username: string, email: string, firstName: string, lastName: string, password: string) =>
+  request('register', { username, email, first_name: firstName, last_name: lastName, password })
 export async function signIn(username: string, password: string) {
   save(await request<Tokens>('login', { username, password }))
   return getProfile()

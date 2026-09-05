@@ -24,14 +24,17 @@ function App() {
     const form = event.currentTarget
     const data = new FormData(form)
     const username = String(data.get('username')).trim()
+    const firstName = String(data.get('first_name')).trim()
+    const lastName = String(data.get('last_name')).trim()
     const password = String(data.get('password'))
     setError(''); setNotice('')
     if (!username) { setError('Please enter a username.'); return }
+    if (mode === 'register' && (!firstName || !lastName)) { setError('Please enter your first and last name.'); return }
     if (mode === 'register' && password !== data.get('confirm')) { setError('Your passwords don’t match. Please try again.'); return }
     setBusy(true)
     try {
       if (mode === 'register') {
-        await register(username, String(data.get('email')).trim(), password)
+        await register(username, String(data.get('email')).trim(), firstName, lastName, password)
         setMode('login'); setVisible(false); form.reset()
         setNotice('Your account is ready. Sign in to continue.')
       } else {
@@ -65,9 +68,9 @@ function App() {
             <section>
               <span className="success-icon" aria-hidden="true">✓</span>
               <span className="eyebrow">YOU’RE SIGNED IN</span>
-              <h2>Welcome, {profile.username}.</h2>
+              <h2>Welcome, {profile.first_name || profile.username}.</h2>
               <p className="subtitle">Your account is ready for the next big idea.</p>
-              <dl className="profile-details"><dt>Username</dt><dd>{profile.username}</dd><dt>Email address</dt><dd>{profile.email || 'Not provided'}</dd></dl>
+              <dl className="profile-details"><dt>Name</dt><dd>{[profile.first_name, profile.last_name].filter(Boolean).join(' ') || 'Not provided'}</dd><dt>Username</dt><dd>{profile.username}</dd><dt>Email address</dt><dd>{profile.email || 'Not provided'}</dd></dl>
               <button className="primary-button" onClick={() => { signOut(); setProfile(null); setError(''); setNotice('You have been signed out.'); setVisible(false) }}>Sign out <span aria-hidden="true">↗</span></button>
             </section>
           ) : (
@@ -85,7 +88,7 @@ function App() {
                 <fieldset disabled={busy}>
                   <label htmlFor="username">Username</label>
                   <input id="username" name="username" autoComplete="username" placeholder="Your username" maxLength={150} required />
-                  {mode === 'register' && <><label htmlFor="email">Email address</label><input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></>}
+                  {mode === 'register' && <><label htmlFor="first_name">First name</label><input id="first_name" name="first_name" autoComplete="given-name" placeholder="Ada" maxLength={150} required /><label htmlFor="last_name">Last name</label><input id="last_name" name="last_name" autoComplete="family-name" placeholder="Lovelace" maxLength={150} required /><label htmlFor="email">Email address</label><input id="email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></>}
                   <label htmlFor="password">Password</label>
                   <div className="password-field"><input id="password" name="password" type={visible ? 'text' : 'password'} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} placeholder="Enter your password" required /><button type="button" aria-label={visible ? 'Hide password' : 'Show password'} aria-pressed={visible} onClick={() => setVisible(!visible)}>{visible ? 'Hide' : 'Show'}</button></div>
                   {mode === 'register' && <><label htmlFor="confirm">Confirm password</label><input id="confirm" name="confirm" type={visible ? 'text' : 'password'} autoComplete="new-password" placeholder="Enter your password again" required /></>}

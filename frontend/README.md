@@ -14,7 +14,7 @@ Vite proxies `/api` to `http://127.0.0.1:8000`. For production, route `/api` to 
 
 ## Authentication
 
-- Create an account with username, email, password, and password confirmation, then sign in.
+- Create an account with first name, last name, username, email, password, and password confirmation, then sign in.
 - Sign-in uses a **username**, matching Django’s JWT endpoint.
 - The profile is fetched from the authenticated API; expired access tokens are refreshed once before retrying.
 - Tokens are stored in session storage, survive reloads in the same tab, and are cleared on sign-out or a rejected refresh. If storage is unavailable, the session stays in memory.

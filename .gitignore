@@ -2,3 +2,29 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Python environments, test output, and local Django state
+.venv/
+venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+backend/db.sqlite3
+*.sqlite3-journal
+
+# JavaScript dependencies and generated builds
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.tsbuildinfo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Operating system and editor files
+.DS_Store
+.idea/
+.vscode/

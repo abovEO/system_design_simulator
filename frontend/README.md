@@ -1,75 +1,28 @@
-# React + TypeScript + Vite
+# System Design Simulator frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript authentication interface for the Django REST API.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Use Node.js 22.12+ (or 20.19+).
 
-## React Compiler
+1. Start Django from `backend`: `python manage.py migrate`, then `python manage.py runserver`.
+2. From `frontend`, run `npm install` and `npm run dev`.
+3. Open the local URL printed by Vite.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Vite proxies `/api` to `http://127.0.0.1:8000`. For production, route `/api` to Django on the same origin, or set `VITE_API_BASE_URL` to the full authentication API base URL before building (for example `https://api.example.com/api/auth`). A separate API origin requires backend CORS configuration.
 
-## Expanding the ESLint configuration
+## Authentication
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Create an account with username, email, password, and password confirmation, then sign in.
+- Sign-in uses a **username**, matching Django’s JWT endpoint.
+- The profile is fetched from the authenticated API; expired access tokens are refreshed once before retrying.
+- Tokens are stored in session storage, survive reloads in the same tab, and are cleared on sign-out or a rejected refresh. If storage is unavailable, the session stays in memory.
+- Sign-out clears the browser session; the backend does not currently expose a token revocation endpoint.
+- Backend validation messages, network errors, and loading states appear in the form.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Checks
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+- `npm run build` — TypeScript checks and production bundle.
+- `npm run lint` — ESLint.
+- `npm test` — authentication API and session handling tests with mocked responses.
